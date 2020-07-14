@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>kirbytest</title>
+    <style>
+    body{
+        background-image: url("bg-pattern.png")
+    }
+    canvas{
+        background-color: greenyellow
+    }
+    </style>
+</head>
+<body>
+    <canvas id = "canvas" width = "1092" height="440"></canvas>
+    <script>
+
+
+
+
+        function sleep (delay) {
+   var start = new Date().getTime();
+   while (new Date().getTime() < start + delay);
+}
+
+
+
+        //캔버스 개체
+    var canvas;
+    var ctx;
+    var canvasBuffer;
+    var bufferCtx;
+    var threadSpeed = 22;
+
+    //커비
+    var kirby;
+    var kirbyx = 40, kirbyy = 355, kirbyw = 18, kirbyh = 20;
+    var cntr = 1;
+    var cntl = 1;
+    var cnta = 1;
+    var j = 0;
+    var kright = 1;
+    
+    //bg
+    var background;
+    //stage
+    var stage1_1;
+    var stage1_1x = 0,stage1_1y = 225;
+    var cnts = 0;
+    //effect
+    var effect
+    var effectx = 80, effecty = 360,effectw = 39, effecth = 42;
+    //wall
+    var wall;
+    var wallx = 0, wally = 0;
+    //enemy
+    var enemy;
+    var enemyx= 300, enemyy = 300;
+    //게임의 상태
+    var STATE_START = false;
+    var STATE_GAMEOVER = false;
+    //키 상태
+    var keyPressed = [];    
+    //crash
+    var crashxr1,crashxr2,crashxr3,crashxr4;
+    var crashxl1,crashxl2;
+    var crashy1, crashy2, crashy3;
+
+
+    window.addEventListener("load", initialize, false);
+    window.addEventListener("keydown", getKeyDown, false);                      
+    window.addEventListener("keyup", getKeyUp, false);
+    function initialize(){
+        canvas = document.getElementById("canvas");
+        if(canvas == null || canvas.getContext == null)return;
+        ctx = canvas.getContext("2d");
+
+        canvasBuffer = document.createElement("canvas");
+        canvasBuffer.width=canvas.width;
+        canvasBuffer.height=canvas.height;
+        bufferCtx = canvasBuffer.getContext("2d");
+
+
+        setImage();
+    
+        loopInstance = setInterval(updata, threadSpeed);
+    }
+    function updata(){
+        if((keyPressed[13] == true) && !STATE_START){
+
+            startGame();
+            setstage1_1();
+            
+        }
+        drawAll();
+          
+        if(keyPressed[65]){
+            
+            effect.src = "effect1.png";
+            
+            if(effectx-39<enemyx&&effectx>enemyx-18&&effecty>enemyy&&effecty-42<enemyy)
+                enemy.src="enemyh.png";
+          
+         
+
+        
+    }
+        if(keyPressed[38]){
+            
+                kirbyy -= 1.25;   
+                effecty -= 1.25;   
+               
+
+            
+        }
+        if(keyPressed[40]){
+            
+
+            if(kirbyy==crashy1 || kirbyy == crashy2 && kirbyx > crashxr1 && kirbyx < crashxl1||kirbyy == crashy2 && kirbyx > crashxr2 && kirbyx < crashxl2||kirbyy == crashy2 && kirbyx > crashxr3||kirbyy == crashy3 && kirbyx > crashxr4 && kirbyx < crashxl3           
+            ){
+                if(kright == 1){
+            kirby.src = "sheet.png";
+     
+        }
+            else if(kright == 0){
+                kirby.src = "sheetm.png";
+            }
+            }
+            else{
+                kirbyy += 1.25;   
+                effecty += 1.25;   
+
+            console.log(kirbyy);
+            if(kright == 1){
+            kirby.src = "sheet.png";
+        }
+            else if(kright == 0){
+                kirby.src = "sheetm.png";
+            }
+            }
+
+        }
+
+        
+        if(keyPressed[37]){
+            setstage1_1();
+            console.log(kirbyx)
+            console.log(arealockl+"area")
+            if(kirbyx == 0 || kirbyx == crashxl1 && kirbyy > crashy2|| kirbyx == crashxl2 && kirbyy > crashy2|| kirbyx == crashxl3 && kirbyy > crashy3){
+                kirby.src = "staym.png";
+            }
+            else{
+                //console.log(kirbyx);
+                
+                
+                if(kirbyx<=arealockl){
+
+                }
+                else if(kirbyx > arealockl ){
+                    
+                    stage1_1x +=1.25;
+                cnts -=1.25;
+
+      
+                }
+                effectx -= 1.25;
+                kirbyx -= 1.25;
+                kirby.src = "left"+cntl+".png";
+            kright = 0;
+            cntl++;
+            if(cntl==11){
+                cntl = 1;
+            }
+
+              
+      
+            }
+
+            
+        }
+        if(keyPressed[39]){
+            setstage1_1();
+            console.log(kirbyx)
+            if(kirbyx == 1070 || kirbyx == crashxr1 && kirbyy > crashy2|| kirbyx == crashxr2 && kirbyy > crashy2|| kirbyx == crashxr3 && kirbyy > crashy2|| kirbyx == crashxr4 && kirbyy > crashy3){
+                kirby.src = "stay.png";
+            }
+            else{
+                //console.log(kirbyx);
+                kirbyx += 1.25;
+                if(kirbyx >= 496.25){
+
+                }
+                else{
+                    stage1_1x -=1.25;
+                cnts +=1.25;
+                }
+    
+                effectx += 1.25;
+            kirby.src = "right"+cntr+".png";
+            kright = 1;
+            cntr++;
+            if(cntr==11){
+                cntr = 1;
+            }
+            }
+
+        }
+    }
+    function crashObstacle(index){
+        
+    }
+    function setstage1_1(){
+        crashxr1 = 300-cnts;
+        crashxr2 = 557.5-cnts;
+        crashxr3 = 690-cnts;
+        crashxr4 = 785-cnts;
+        crashxl1 = 400-cnts;
+        crashxl2 = 590-cnts;
+        crashxl3 = 895-cnts;
+        crashxl4 = 895-cnts;
+        crashy1 = 355;
+        crashy2 = 340;
+        crashy3 = 295;
+        arealockl = 0 -cnts;
+
+    }
+    function setstage1_2(){
+
+    }
+    function setstage1_3(){
+
+    }
+    function drawAll(){
+        if(!STATE_START){
+            return;
+        }
+        else if(STATE_GAMEOVER){
+
+        }
+        else{
+            drawBg();
+            drawStage();
+            drawenemy();
+            drawPlayer();
+            drawwall();
+            draweffect();
+    
+            ctx.drawImage(canvasBuffer, 0, 0);
+
+        }
+    }
+    function stopGame(){
+        STATE_START = false;
+    }
+    function drawBg(){
+      bufferCtx.drawImage(background, 0, 0);
+    }
+    function drawPlayer(){
+        bufferCtx.drawImage(kirby, kirbyx, kirbyy);
+        
+        //bufferCtx.drawImage(kirby, 0, 0);
+    }
+    function drawStage(){
+        bufferCtx.drawImage(stage1_1,stage1_1x, stage1_1y);
+    }
+    function drawwall(){
+        bufferCtx.drawImage(wall,wallx, wally);     
+     }
+     function drawenemy(){
+        bufferCtx.drawImage(enemy,enemyx, enemyy);     
+     }
+    function draweffect(){
+        bufferCtx.drawImage(effect,effectx-effectw/2, effecty-effecth/2);
+        
+
+ 
+    }
+    function startGame(){
+        STATE_START = true;
+
+
+    }
+    function setImage(){
+  
+
+        background = new Image();
+        background.src = "map.jpg";
+        kirby = new Image();
+        kirby.src = "stay.png";
+        stage1_1 = new Image();
+        stage1_1.src="1-1.png"
+        wall = new Image();
+        wall.src="wall.png";
+        effect = new Image();
+        effect.src = "white.png"
+        enemy = new Image();
+        enemy.src = "enemy.png"
+    }
+
+
+
+    function getKeyDown(){
+        keyPressed[event.keyCode] = true;
+    }
+    function getKeyUp(){
+        keyPressed[event.keyCode] = false;
+        if(kright == 1){
+            kirby.src = "stay.png";
+        }
+        else if(kright == 0){
+            kirby.src = "staym.png";
+        }
+        effect.src = "white.png"
+        enemy.src = "enemy.png"
+    }
+    </script>
+</body>
+</html>
